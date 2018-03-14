@@ -1,10 +1,34 @@
 = Create Simple GUI Applications: Quick, awesome applications in Python with Qt
-include::./preamble.adoc[]
+Martin Fitzpatrick
+v1.1, 2018-03-12
+:doctype: book
+:creator: {author}
+:producer: Asciidoctor
+:source-highlighter: coderay
+:listing-caption: Listing
+:pdf-page-size: A4
+:icons: font
+:toc: left
+:front-cover-image: image:title_page.png[width=2550,height=3300]
+:copyright: CC-BY-SA 3.0
+:imagesdir: images
+ifndef::ebook-format[:leveloffset: 1]
 
-include::./frontmatter.adoc[]
-include::./01-introduction.adoc[]
-include::./03-getting-started.adoc[]
-include::./04-basic-qt-features.adoc[]
-include::./90-resources.adoc[]
+// Intro chapters
+include::./introduction.adoc[]
+include::./getting-started.adoc[]
 
-include::./postamble.adoc[]
+// MAIN CONTENT chapters
+include::./chapter-basic.adoc[]
+include::./chapter-creator.adoc[]
+include::./chapter-further.adoc[]
+include::./chapter-advanced.adoc[]
+
+// Example apps
+include::./chapter-apps.adoc[]
+
+// Final
+include::./what-next.adoc[]
+include::./resources.adoc[]
+include::./acknowledgements.adoc[]
+include::./copyright.adoc[]

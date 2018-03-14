@@ -1,0 +1,93 @@
+[#signals]
+== Signals
+
+As already described, every interaction the user has with a Qt application causes
+an Event. There are multiple types of event, each representing a difference
+type of interaction — e.g. mouse or keyboard events.
+
+Events that occur are passed to the event-specific handler on the widget where
+the interaction occurred. For example, clicking on a widget will cause a
+`QMouseEvent` to be sent to the `.mousePressEvent` event handler on the widget.
+This handler can interrogate the event to find out information, such as
+what triggered the event and where specifically it occurred.
+
+You can intercept events by subclassing and overriding the handler function on
+the class, as you would for any other function. You can choose to filter,
+modify, or ignore events, passing them through to the normal handler for
+the event by calling the parent class function with `super()`.
+
+[source,python]
+----
+class CustomButton(Qbutton)
+
+    def keyPressEvent(self, e):
+        # My custom event handling
+        super(CustomButton, self).keyPressEvent(e)
+----
+
+However, imagine you want to catch an event on 20 different buttons. Subclassing
+like this now becomes an incredibly tedious way of catching, interpreting
+and handling these events.
+
+[source,python]
+----
+class CustomButton99(Qbutton)
+
+    def keyPressEvent(self, e):
+        # My custom event handling
+        super(CustomButton99, self).keyPressEvent(e)
+----
+
+Instead of intercepting raw events, Qt provides
+_Signals_ which allow you to 'listen' for
+notifications of specific occurrences within your application. While
+these can be similar to events — a click on a button — they can also
+be more nuanced — updated text in a box. Data can also be sent
+alongside a signal - so as well as being notified of the updated text
+you can also receive it.
+
+The receivers of signals are called *Slots* in Qt terminology. A number of
+standard slots are provided on Qt classes to allow you to wire together
+different parts of your application. However, you can also use any Python
+function as a slot, and therefore receive the message yourself.
+
+
+TIP: Load up a fresh copy of `MyApp_window.py` and save it under a new name for this section.
+
+=== QMainWindow Signals
+
+For example, let's look at the signals available for our `QMainWindow`. You can
+find this information in the http://doc.qt.io/qt-5/qmainwindow.html[Qt documentation].
+Scroll down to the Signals section to see the signals implemented for
+this class.
+
+.Qt 5 Documentation — QMainWindow Signals
+image::qtdoc-signals-qmainwindow.png[scaledwidth=50%,align="center"]
+
+As you can see, alongside the two `QMainWindow` signals, there are
+4 signals inherited from `QWidget` and 2 signals inherited from `Object`.
+If you click through to the `QWidget` signal documentation you can see a
+`.windowTitleChanged` signal implemented here. Next we'll demonstrate that
+signal within our application.
+
+.Qt 5 Documentation — Widget Signals
+image::qtdoc-signals-qwidget.png[scaledwidth=50%,align="center"]
+
+<<<
+
+[source,python]
+----
+include::code/signals_slots_and_events_1.py[]
+----
+
+<<<
+
+We start by creating an function that will behave as a ‘slot’ for our
+signals.
+
+Then we use .connect on the `.windowTitleChanged` signal. We pass the
+function that we want to be called with the signal data. In this case
+the signal sends a string, containing the new window title.
+
+If we run that, we see that we receive the notification that the window
+title has changed.

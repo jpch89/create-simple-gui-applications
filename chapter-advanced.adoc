@@ -1,0 +1,9 @@
+[#chapter-advanced]
+= Advanced PyQt Features
+
+include::./multithreading.adoc[]
+//include::./vector-graphics.adoc[]
+// working with data
+// http & networking
+// internationalization (i18n) and localization (l10n)
+// packaging for distribution

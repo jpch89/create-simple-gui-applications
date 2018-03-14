@@ -1,0 +1,6 @@
+[#chapter-basic-sample]
+= Basic PyQt Features
+
+include::./qapplication.adoc[]
+include::./widgets.adoc[]
+

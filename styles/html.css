@@ -420,6 +420,28 @@ pre.CodeRay {
     padding: 0 1rem;
 }
 
+.topbar {
+    position:fixed;
+    top:0;
+    right:0;
+    background-color: #fff;
+    box-shadow: 5px 5px 20px #888888;
+    width: 100%;
+    padding: 0 1rem;
+    z-index: 1000;
+    text-align: center;
+    vertical-align: absmiddle;
+    display: none;
+}
+
+.topbar p {
+    text-align:center;
+    margin: 0;
+    font-size: 0.9em;
+}
+.topbar h3 { display: inline; font-size: 1.3em;}
+.topbar .product-button { line-height: 2em; }
+
 .modal .author {
     margin-top: -0.5rem;
     color: #888;
@@ -452,10 +474,10 @@ pre.CodeRay {
 a.product-button {
     margin: 0.25rem 0.5rem;
     border-radius: 4px;
-    color: #000;
-    border:1px solid #aaa;
+    color: #fff;
+    border:1px solid #ba3925;
     box-shadow: #eee 0 0 5px 1px;
-    background-color: #fff !important;
+    background-color: #FF5722 !important;
     
     display: inline-block;
     font-family: -apple-system, ".SFNSDisplay-Regular", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
@@ -469,8 +491,7 @@ a.product-button {
 }
 
 a.product-button:hover {
-    color: #000;
-    border:1px solid #aaa;
-    box-shadow: #fdce71 0 0 5px 1px !important;
+    color: #fff;
+    box-shadow: #aaa 0 0 5px 1px !important;
 }
 

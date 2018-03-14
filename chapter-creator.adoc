@@ -1,0 +1,9 @@
+[#chapter-creator]
+= Qt Creator
+
+include::./qt-creator-quickstart.adoc[]
+// - Introduction to the interface
+// - Layout
+// - Actions & Menus
+// - Using .uic files
+

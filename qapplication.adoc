@@ -1,0 +1,216 @@
+[#application]
+== My first Application
+
+Welcome to your first steps in create graphical applications! In this chapter you will
+be introduced to the key basic features of Qt (PyQt) that you will find yourself using
+in any applications you create. We will develop a a application,
+adding (and removing) features step-by-step so you get to see how everything works.
+Use the code given as your guide, but feel free to experiment.
+
+So, let's get started by creating our very first windowed application. Before getting
+the window on the screen, there are a few key concepts to introduce about how
+applications are organised in the Qt world. If you're already familiar with event
+loops you can safely skip to the next section.
+
+=== The Event loop and `QApplication`
+
+The core of every Qt Applications is the `QApplication` class. Every application
+needs one — and only one — `QApplication` object to function. This object holds
+the *event loop* of your application — the core loop which governs all user 
+interaction with the GUI.
+
+Each interaction with your application — whether a press of a key, click of a mouse,
+or mouse movement — generates an _event_ which is placed on the _event queue_.
+In the event loop, the queue is checked on each iteration and if a waiting event
+is found, the event and control is passed to the specific _event handler_ for the event. 
+The event handler deals with the event, then passes control back to the event
+loop to wait for more events. There is only *one* running event loop per 
+application.
+
+[TIP]
+.The `QApplication` class
+====
+- `QApplication` holds the Qt event loop
+- One `QApplication` instance required
+- You application sits waiting in the event loop until an action is taken
+- There is only *one* event loop
+====
+
+=== Creating your App
+
+So, let's create your first application! To start create a new Python file — you
+can call it whatever you like (e.g. `MyApp.py`).
+
+[IMPORTANT]
+====
+We'll be editing within this file as we go along, and you may want to come
+back to earlier versions of your code, so remember to keep regular backups
+along the way. For example, after each section save a file named `MyApp_<section>.py`
+====
+
+The source code for your very first application is shown below. Type it in verbatim,
+and be careful not to make mistakes. If you do mess up, Python will let you know
+what's wrong. If you don't feel like typing it all in, you will have
+received a copy of the source code when you bought this book.
+
+[source,python]
+----
+include::code/creating_a_window_1.py[]
+----
+
+We can go through the code line by line.
+
+We start by importing the PyQt5 classes that we need for the application,
+from the `QtWidgets`, `QtGui` and `QtCore` submodules.
+
+[TIP]
+====
+This kind of global import `from <module> import *` is generally
+frowned upon in Python. However, in this case we know that the 
+PyQt classnames don't conflict with one another, or with Python itself.
+Importing them all saves a lot of typing, and helps with PyQt4 compatibility.
+====
+
+Next we create an instance of `QApplication`, passing in `sys.arg` (which contains 
+command line arguments). This allows us to pass command line arguments to our
+application. If you know you won't be accepting command line arguments you can
+pass in an empty list instead, e.g.
+
+[source,python]
+----
+app = QApplication([])
+----
+
+Finally, we call `app.exec_()` to start up the event loop.
+
+[TIP]
+====
+The underscore is there because `exec` is a reserved word in Python and can’t
+be used as a function name. PyQt5 handles this by appending an underscore to the 
+name used in the C++ library. You'll also see it for `.print_()`.
+====
+
+Now, let's launch your application. You can run it from the command line like any
+other Python script, for example:
+
+[.terminal]
+----
+python MyApp.py
+----
+    
+Or, for Python 3:
+
+[.terminal]
+----
+python3 MyApp.py
+----
+
+The application should run without errors, yet there will be no indication of 
+anything happening, aside from perhaps a busy indicator. This is completely 
+normal — we haven't told Qt to create a window yet!
+
+Every application needs at least one `QMainWindow`, though you can have more
+than one if you ned to. However, no matter how many you have, your application
+will always exit when the last main window is closed.
+
+Let's add a `QMainWindow` to our application.
+
+[source,python]
+----
+include::code/creating_a_window_2.py[]
+----
+
+<<<
+
+[TIP]
+.The `QMainWindow` class
+====
+- Main focus for user of your application
+- Every application needs at least one (...but can have more)
+- Application will exit when last main window is closed
+====
+
+
+If you launch the application you should now
+see your main window. Notice that Qt automatically creates a window with the normal
+window decorations, and you can drag it around and resize it like any normal window.
+
+[WARNING]
+.I can't see my window!
+==== 
+You must *always* call  `.show()` on a newly created `QMainWindow` as they
+are created invisible by default.
+====
+
+Congratulations — you've created your first Qt application! It's not very
+interesting at the moment, so we should add some content.
+
+If you want to create a custom window, the best approach is to subclass 
+`QMainWindow` and then include the setup for the window in the `\\__init__`
+block. This allows the window behaviour to be self contained.
+We can add our own subclass of `QMainWindow` — call it `MainWindow` to
+keep things simple.
+
+<<<
+
+[source,python]
+----
+include::code/creating_a_window_end.py[]
+----
+
+Notice how we write the `\\__init__` block with a small bit of boilerplate to take
+the arguments (none currently) and pass them up to the `\\__init__` of
+the parent `QMainWindow` class.
+
+[TIP]
+====
+When you subclass a Qt class you must *always* call the super
+`\\__init__` function to allow Qt to set up the object.
+====
+
+Next we use `.setWindowTitle()` to change the title of our main window.
+
+Then we add our first widget — a `QLabel` — to the middle of the window.
+This is one of the simplest widgets available in Qt. You create the object
+by passing in the text that you want the widget to display.
+
+We set the alignment of the widget to the center, so it will show up inin
+the middle of the window.
+
+[TIP]
+====
+The Qt namespace (`Qt.`) is full of all sorts of attributes that you can use
+to customise and control Qt widgets. We’ll cover that a bit more later, but
+http://doc.qt.io/qt-5/qt.html[it’s worth a look].
+====
+
+Finally, we call `.setCentralWidget()` on the the window. This is a
+`QMainWindow` specific function that allows you to set the widget that
+goes in the middle of the window.
+
+If you launch your application you should see your window again, but this time
+with the `QLabel` widget in the middle. 
+
+[TIP]
+.Hungry for widgets?
+====
+We'll cover more widgets in detail shortly
+but if you're impatient and would like to jump ahead you can take a look at the
+http://doc.qt.io/qt-5/widget-classes.html#basic-widget-classes[QWidget documentation].
+Try adding the different widgets to your window!
+====
+
+In this section we've covered the `QApplication` class, the `QMainWindow`
+class, the event loop and experimented with adding a simple widget to a window. In the next
+section we'll take a look at the mechanisms Qt provides for widgets and windows to 
+communicate with one another and your own code.
+
+IMPORTANT: Save a copy of your file as `MyApp_window.py` as we'll need it again later.
+
+
+
+
+
+
+
+

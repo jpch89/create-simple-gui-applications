@@ -1,0 +1,13 @@
+[#purchase]
+= The complete book
+
+If you enjoyed this sample you can purchase the complete book, together
+with a optional video course, at https://martinfitzpatrick.name/create-simple-gui-applications
+
+The full book covers many more aspects of developing with PyQt, from
+getting started with the Qt Creator to multithreading advanced
+applications. All purchases come with free updates as the book is
+developed and expands.
+
+For up-to-date tutorials, tips and code samples, you can also check out my
+website at https://martinfitzpatrick.name/

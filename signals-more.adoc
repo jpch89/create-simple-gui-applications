@@ -1,0 +1,145 @@
+[#signals-more]
+== Extending Signals
+
+=== Custom Signals
+
+The final bit of signals we’re going to cover is custom signals. These
+allow you to use the Qt event loop to send data around your application.
+It’s a great way to keep your app modular and responsive.
+
+You can define your own signals using the `pyQtSignal` method provided
+by PyQt5. Signals must be defined as attributes of the class, passing in the type
+that will sent with the signals when creating it. You can choose
+any valid Python variable name for the name of the signal.
+
+[source,python]
+----
+def MainWindow(QMainWindow):
+    message = pyqtSignal(str)
+    value = pyqtSignal(int)
+----
+
+These signals can then be used as normal:
+
+[source,python]
+----
+window.value.emit(23)  # Signal on another object.
+self.message.emit("my message")  # Signal on self.
+----
+
+You can create your own signals on any class that is a subclass of
+`QObject`. That includes all widgets, including the main window, dialog
+boxes, and so on.
+
+You can send any Python type, including multiple types, and
+compound types (e.g. dictionaries, lists).
+
+[source,python]
+----
+def MyClass(QObject):
+    keyvalue = pyqtSignal(dict)
+    data = pyqtSignal(tuple)
+----
+
+TIP: If you define your signal as `pyqtSignal(object)` it will be able to
+send any Python type. But this isn't recommend, as receiving handlers will
+then need to deal with all types.
+
+=== Modifying Signal Data
+
+As you find yourself using signals more often, you'll often find that
+you want to be able to customise the data that is sent with them.
+Unfortunately there is no way to do this in Qt directly, but we can
+exploit some features of Python to make it work for us.
+
+To start with, lets see how to send less data. For example we’ll create
+a function that accepts two parameters, with default values. However,
+neither of these is a string. How can we connect our
+`.windowTitleChanged` signal to this function?
+
+We can do this by using a wrapper function, or a lambda. When the signal is
+emitted this wrapper function will be called and can add or remove data
+from the signal as required, before passing it on to the real slot.
+
+So, for example, to discard data from a signal that emits a single value
+we could use the following construction.
+
+[source,python]
+----
+def wrapper_function(x):
+    real_function()  # To call target, discarding x
+----
+
+Here the `wrapper_function` accepts the `x` value, but does not pass it when
+calling `real_function`. We can also write this using a lambda as follows:
+
+[source,python]
+----
+lamba x: fn()
+----
+
+Just like the function, the lambda accepts a single parameter `x`, then discards it
+calling the *real* target `fn` with no parameters:
+
+[TIP]
+====
+It doesn't matter whether you use a normal function or `lambda`
+(one-line function) for these. However, we use the lambda syntax here
+because it makes for clearer code. For example, the following are
+functionally identifical.
+====
+
+If we want to send *more* data we can use a similar construction, but
+instead of discarding a parameter we add another. For example:
+
+[source,python]
+----
+def wrapper_function(x)
+    real_function(x, some_more_data)
+----
+
+Or again, with `lambda` syntax:
+
+[source,python]
+----
+lamba x: fn(x, some_more_data)
+----
+
+However, lets try that again with a loop. Here we’re going to use a
+layout to create a list of widgets, don’t worry about that it’ll be
+explained later.
+
+You’ll notice that clicking on all of the widgets gives the same result?
+
+So, what can we do? If we pass the extra data in as a named parameter to
+the lambda, we create a new namespace and voila it works.
+
+[source,python]
+----
+lambda x, data=data: fn(x, data)
+----
+
+[IMPORTANT]
+.You *must* use named parameters
+====
+Because of the way variables are bound in Python, if you just use the
+variable inside the lambda/function it will remain bound to the loop.
+When any signal is triggered, that variable will equal the last value
+it had in the loop.
+However, when passing in as a named variable the value is bound directly
+each time the function/lambda is defined, and each signal gets a different
+value.
+====
+
+So, now you should be able to pass just about anything to any function
+using signals! The final code now looks like this:
+
+<<<
+
+[source,python]
+----
+include::code/signals_slots_and_events_2.py[]
+----
+
+<<<
+

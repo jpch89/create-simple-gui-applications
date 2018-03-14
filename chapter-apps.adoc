@@ -1,0 +1,5 @@
+[#chapter-apps]
+= Example applications
+
+include::./app-browser.adoc[]
+include::./app-minesweeper.adoc[]

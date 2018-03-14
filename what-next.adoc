@@ -1,0 +1,20 @@
+[#what-next]
+= What next?
+
+This book covers the key things you need to know to start creating
+GUI applications with Python. If you've made it here you should be
+well on your way to create your own apps!
+
+But there is still a to discover while you build your applications.
+To help with this I post regular tips, tutorials and code snippets
+https://martinfitzpatrick.name/tag/gui/[on my website]. Like this book
+all samples are MIT licensed and free to mix into your own apps.
+
+If you've received this book from someone else, you may also
+be interested in my https://martinfitzpatrick.name/create-simple-gui-applications[related video course]
+which allows you to follow through and see the development of PyQt
+applications live.
+
+Thanks for reading, and if you have any feedback or suggestions for for
+additional topics to cover please let me know.
+

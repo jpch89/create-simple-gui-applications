@@ -1,0 +1,143 @@
+[#dialogs]
+== Dialogs
+
+Dialogs are useful GUI components that allow you to *communicate* with the user (hence
+the name dialog). They are commonly used for file Open/Save, settings, preferences,
+or for functions that do not fit into the main UI of the application. They are small
+modal (or *blocking*) windows that sit in front of the main application until they are
+dismissed.  Qt actually provides a number of 'special' dialogs for the most common
+use-cases, allowing you to take advantage of desktop-specific tools for a better
+user experience.
+
+.Standard GUI features — A search dialog
+image::dialog-find.png[scaledwidth=50%,align="center"]
+
+.Standard GUI features — A file Open dialog
+image::dialog-open.png[scaledwidth=50%,align="center"]
+
+In Qt dialog boxes are handled by the `QDialog` class. To create a new dialog
+box simply create a new object of `QDialog` type (or a subclass), passing in
+a parent widget, e.g. `QMainWindow`, as its parent.
+
+Let's create our own `QDialog`, we'll use our menu example code so we can start a dialog
+window when a button on the toolbar is pressed.
+
+TIP: Load up a fresh copy of `MyApp_menus.py` and save it under a new name for this section.
+
+[source,python]
+----
+include::code/dialogs_1.py[]
+----
+
+In the triggered function (that receives the signal from the button )
+we create the dialog instance, passing our `QMainWindow` instance as a
+parent. This will make the dialog a *modal window* of `QMainWindow`. This means the
+dialog will completely block interaction with the parent window.
+
+Once we have created the dialog, we start it using `.exec_()` - just like we did for
+`QApplication` to create the main event loop of our application. That’s not a coincidence:
+when you exec the `QDialog` an entirely new event loop - specific for the dialog - is created.
+
+[TIP]
+.One event loop to rule them all
+====
+Remember I said there can only be one Qt event loop running at any time?
+I meant it! The `QDialog` completely blocks your application execution.
+Don't start a dialog and expect anything else to happen anywhere else in your application.
+
+We'll cover how you can use multithreading to get you out of this pickle in a later chapter.
+====
+
+====
+icon:rocket[] *Run it!* The window will display, now click the bug button and a modal
+window should appear. You can exit by clicking the [x].
+====
+
+Like our very first window, this isn't very interesting. Let's fix that by
+adding a dialog title and a set of OK and Cancel buttons to allow the user to *accept*
+or *reject* the modal.
+
+To customise the `QDialog` we can subclass it — again you *can* customise the dialog
+without subclassing, but it's nicer if you do.
+
+[source,python]
+----
+include::code/dialogs_2.py[]
+----
+
+
+In the above code, we first create our subclass of `QDialog` which we've called `CustomDialog`.
+As for the `QMainWindow` we customise it within the `\\__init__` block to ensure that our
+customisations are created as the object is created. First we set a title for the `QDialog` using
+`.setWindowTitle()`, exactly the same as we did for our main window.
+
+The next block of code is concerned with creating and displaying the dialog buttons. This
+is probably a bit more involved than you were expecting. However, this is due to Qt's flexibility
+in handling dialog button positioning on different platforms.
+
+[WARNING]
+.Easy way out?
+====
+You could of course choose to ignore this and use a standard `QButton` in a layout, but the approach
+outlined here ensures that your dialog respects the host desktop standards
+(Ok on left vs. right for example). Messing around with these behaviours
+can be incredibly annoying to your users, so I wouldn't recommend it.
+====
+
+The first step in creating a dialog button box is to define the buttons want to show,
+using  namespace attributes from `QDialogButtonBox`. Constructing a line of multiple buttons is
+as simple as ORing them together using a pipe (`|`). The full list of buttons available
+is below:
+
+
+[options="header"]
+|===
+| Button types
+| `QDialogButtonBox.Ok`
+| `QDialogButtonBox.Open`
+| `QDialogButtonBox.Save`
+| `QDialogButtonBox.Cancel`
+| `QDialogButtonBox.Close`
+| `QDialogButtonBox.Discard`
+| `QDialogButtonBox.Apply`
+| `QDialogButtonBox.Reset`
+| `QDialogButtonBox.RestoreDefaults`
+| `QDialogButtonBox.Help`
+| `QDialogButtonBox.SaveAll`
+| `QDialogButtonBox.Yes`
+| `QDialogButtonBox.YesToAll`
+| `QDialogButtonBox.No`
+| `QDialogButtonBox.NoToAll`
+| `QDialogButtonBox.Abort`
+| `QDialogButtonBox.Retry`
+| `QDialogButtonBox.Ignore`
+| `QDialogButtonBox.NoButton`
+|===
+
+These should be sufficient to create any dialog box you can think of. For example, to show an
+OK and a Cancel button we used:
+
+    buttons = QDialogButtonBox.Ok | QDialogButtonBox.Cancel
+
+The variable `buttons` now contains a bitmask flag representing those two buttons. Next,
+we must create the `QDialogButtonBox` instance to hold the buttons. The flag for the
+buttons to display is passed in as the first parameter.
+
+To make the buttons have any effect, you must connect the correct
+`QDialogButtonBox` signals to the slots on the dialog. In our case we've connected the
+`.accepted` and `.rejected` signals from  the `QDialogButtonBox` to the handlers for
+`.accept()` and `.reject()` on  our subclass of `QDialog`.
+
+Lastly, to make the `QDialogButtonBox` appear in our dialog box we must add it to the
+dialog layout. So, as for the main window we create a layout, and add our `QDialogButtonBox`
+to it (`QDialogButtonBox` is a widget), and then set that layout on our dialog.
+
+====
+icon:rocket[] *Run it!* Click to launch the dialog and you will see a dialog box with buttons in it.
+====
+
+Congratulations! You've created your first dialog box. Of course, you can continue to
+add any other content to the dialog box that you like. Simply insert it into the
+layout as normal.
+
+

@@ -1,0 +1,6 @@
+[#chapter-further]
+= Further PyQt Features
+
+include::./signals-more.adoc[]
+include::./events.adoc[]
+// include::./widgets-custom.adoc[]

@@ -1,0 +1,245 @@
+[#events]
+== Events
+
+As we've seen, _Signals_ provide a simple mechanism for intra-application communication. By
+attaching your _slot_ to a signal, you can be notified of widget updates and user
+interaction. However, sometimes you need to be able to receive _lower level_ information
+about how a widget is behaviour, or receiving user interaction.
+
+In these cases you will find yourself needing to work with Qt
+_Events_ directly. In this chapter we'll cover some common
+cases where this kind of raw event handling is needed.
+
+=== Events & handlers
+
+Every interaction with a widget creates events. Qt represents these events using _event objects_
+which package up information relevant to the interaction. For example, a mouse event may include
+mouse position or button status. As these events are created, Qt sends them to the underlying
+widget via the widgets _event handler_.
+
+By defining custom, or extended _event handlers_ you can alter the way your widgets respond
+to these events. Event handlers are defined just like any other method, but the name is
+specific for the type of event they handle.
+
+For example, the following event handlers are available for handling mouse events.
+
+[options="header"]
+|===
+|Event handler           | Event type moved
+|mouseMoveEvent          | Mouse moved
+|mousePressEvent         | Mouse button pressed
+|mouseReleaseEvent       | Mouse button released
+|mouseDoubleClickEvent   | Double click detected
+|===
+
+These could be added to your main window class as follows. In each case `e` will receive
+the incoming event:
+
+[source,python]
+----
+class MainWindow(QMainWindow):
+    def mouseMoveEvent(self, e)
+        pass
+
+    def mousePressEvent(self, e)
+        pass
+
+    def mouseReleaseEvent(self, e)
+        pass
+
+    def mouseDoubleClickEvent(self, e)
+        pass
+----
+
+Different types of events receive different types of event objects. The two most commonly used
+event types in PyQt5 will be covered next.
+
+==== Mouse events
+
+All mouse events in Qt are tracked with the `QMouseEvent` object, with specific state being
+readable from event methods.
+
+[options="header"]
+|===
+|Method        | Returns
+|`.button()`   | Specific button that trigger this event
+|`.buttons()`  | State of all mouse buttons (OR'ed flags)
+|`.globalPos()`| Application-global position as a `QPoint`
+|`.globalX()`  | Application-global _horisontal_ X position
+|`.globalY()`  | Application-global _vertical_ Y position
+|`.pos()`      | Widget-relative position as a `QPoint` _integer_
+|`.posF()`     | Widget-relative position as a `QPointF` _float_
+|===
+
+You can use these methods within an event handler to respond to different events differently,
+or ignore them completely. Position methods provide both _global_ and _local_ (widget-relative)
+position information as `QPoint` objects. Buttons are reported using the mousebutton types
+ from the `Qt` namespace.
+
+[options="header"]
+|===
+|Method            |Bitmask|Represents
+|`Qt.NoButton`	   |000|No button pressed, or the event is not related to button press.
+|`Qt.LeftButton`   |001|The left button is pressed
+|`Qt.RightButton`  |010|The right button is pressed.
+|`Qt.MiddleButton` |100|The middle button is pressed.
+|===
+
+NOTE: On right-handed mice the left and right button positions are reversed, i.e. pressing the
+right-most button will return `Qt.LeftButton`. You can usually ignore this as it is an OS feature.
+
+When receive mouse events you can check for button presses by comparing to this set of values.
+
+[source,python]
+----
+class MainWindow(QMainWindow):
+    def mousePressEvent(self, e):
+        if e.button() == Qt.LeftButton:
+            # handle the left-button press in here
+
+        elif e.button == Qt.RightButton:
+            # handle the right-button press in here.
+----
+
+The button values can be combined (OR'ed) for multiple button presses, using the pipe
+`|` operator.
+
+[source,python]
+----
+class MainWindow(QMainWindow):
+
+    def mouseMoveEvent(self, e):
+        if e.buttons() == Qt.LeftButton:
+            # the left button is pressed while moving
+
+        elif e.buttons() == Qt.LeftButton | Qt.RightButton:
+            # the left and right button is pressed while moving.
+----
+
+TIP: This is a bitwise _or_ so the resulting value has bits set for each bit
+set in the inputs: here `Qt.LeftButton | Qt.RightButton` means binary `01 | 10`
+giving a result of `11`. The check against `e.buttons()` will
+_only_ return true if both buttons are pressed.
+
+==== Context menus
+
+Context menus are small context-sensitive menus which typically appear when right clicking on
+a window. Qt has support for generating these menus, and widgets have a specific event used
+to trigger them. In the following example we're going to intercept the `.contextMenuEvent`
+a `QMainWindow`. This event is fired whenever a context menu is
+_about to be_ shown, and is passed a single value `event` of type
+`QContextMenuEvent`.
+
+To intercept the event, we simply override the object method with our
+new method of the same name. So in this case we can create a method
+on our `MainWindow` subclass with the name `contextMenuEvent` and it
+will receive all events of this type.
+
+[source,python]
+----
+class MainWindow(QMainWindow):
+    def __init__(self, *args, **kwargs):
+        super(MainWindow, self).__init__(*args, **kwargs)
+        self.show()
+
+    def contextMenuEvent(self, e):
+        context = QMenu(self)
+        context.addAction(QAction('test 1', self))
+        context.addAction(QAction('test 2', self))
+        context.addAction(QAction('test 3', self))
+        context.exec_(e.globalPos())
+----
+
+If you run the above code and right-click within the window, you'll see
+a context menu appear. You can set up `.triggered` slots on your menu
+actions as normal (and re-use actions defined for menus and toolbars).
+
+NOTE: When passing the initial position to the `exec_` function, this
+must be relative to the parent passed in while defining. In this case
+we pass `self` as the parent, so we can use the global position.
+
+Just for completeness, there is actually a signal-based approach to
+creating context menus.
+
+[source,python]
+----
+class MainWindow(QMainWindow):
+    def __init__(self, *args, **kwargs):
+        super(MainWindow, self).__init__(*args, **kwargs)
+        self.show()
+
+        self.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.customContextMenuRequested.connect(self.on_context_menu)
+
+    def on_context_menu(self, pos):
+        context = QMenu(self)
+        context.addAction(QAction('test 1', self))
+        context.addAction(QAction('test 2', self))
+        context.addAction(QAction('test 3', self))
+        context.exec_(self.mapToGlobal(pos))
+----
+
+It's entirely up to you which you choose.
+
+=== Event hierarchy
+
+In PyQt5 every widget is part of two distinct hierarchies: the Python object hierarchy, and
+the Qt layout hierarchy. How you respond or forward events received can affect how your
+UI behaves.
+
+==== Python inheritance forwarding
+
+Often you may want to intercept an event, do something with it, yet still trigger
+the default event handling behaviour. If your object is inherited from a standard widget,
+it will likely have sensible behaviour implemented by default. You can trigger this by
+calling up to the parent implementation using `super()`.
+
+NOTE: This is the Python parent class, not the PyQt5 `.parent()`.
+
+[source,python]
+----
+def mousePressEvent(self, event):
+    print("Mouse pressed!")
+    super(self, MainWindow).contextMenuEvent(event)
+----
+
+The event will continue to behave as normal, yet you've added some non-interfering behaviour.
+
+==== Layout forwarding
+
+When you add a widget to your application, it also gets another _parent_ from the layout. The
+parent of a widget can be found by calling `.parent()`. Sometimes you specific these parents
+manually, such as for `QMenu` or `QDialog`, often it is automatic. When you add a widget to
+your main window for example, the main window will become it's parent.
+
+When events are created for user interaction with the UI, these events are passed to the
+_uppermost_ widget in the UI. So, if you have a button on a window, and click the
+button, the button will receive the event first.
+
+The the first widget cannot handle the event, or chooses not to, the event will _bubble up_ to
+the parent widget, which will be given a turn. This _bubbling_ continues all the way up nested
+widgets, until the event is handled or it reaches the main window.
+
+In your own event handlers you can choose to mark an event as _handled_
+calling `.accept()`:
+
+[source,python]
+----
+    class CustomButton(Qbutton)
+        def mousePressEvent(self, e):
+            e.accept()
+----
+
+Alternatively, you can mark it as _unhandled_ by calling `.ignore()` on the event object. In
+this case the event will continue to bubble up the hierarchy.
+
+[source,python]
+----
+    class CustomButton(Qbutton)
+        def event(self, e):
+            e.ignore()
+----
+
+If you want your widget to appear transparent to events, you can safely ignore events which
+you've actually responded to in some way. Similarly, you can choose to accept events you
+are not responding to in order to silence them.

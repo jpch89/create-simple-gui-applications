@@ -1,14 +1,10 @@
-all: clean build publish
+all: clean build
 
 build:
-	asciidoctor -a stylesheet=html.css -a stylesdir=./styles -b html -o build/index.html Book.adoc
-	asciidoctor-pdf -o build/book.pdf Book.adoc
-	# asciidoctor-epub3 -o build/book.epub Book.adoc
-
-	cp -r ./images ./build/images
-
-publish:
-	cp -r ./build/. ~/webapps/martinfitzpatrick_books/create-simple-gui-applications
+	asciidoctor-pdf -o build/create-simple-gui-applications.pdf Book.adoc
+	asciidoctor-epub3 -o build/create-simple-gui-applications.epub -a ebook-validate Book.adoc
+	asciidoctor-epub3 -o build/create-simple-gui-applications.mobi -a ebook-format=kf8 Book.adoc
+	asciidoctor-pdf -o build/sample.pdf Sample.adoc
 
 clean:
 	rm -r ./build

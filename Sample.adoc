@@ -1,0 +1,27 @@
+= Create Simple GUI Applications: Sample
+Martin Fitzpatrick
+Sample
+:doctype: book
+:creator: {author}
+:producer: Asciidoctor
+:source-highlighter: coderay
+:listing-caption: Listing
+:pdf-page-size: A4
+:icons: font
+:toc: left
+:front-cover-image: image:title_page_sample.png[width=2550,height=3300]
+:copyright: CC-BY-SA 3.0
+:imagesdir: images
+ifndef::ebook-format[:leveloffset: 1]
+
+include::./introduction.adoc[]
+
+include::./chapter-basic-sample.adoc[]
+
+
+// Final
+include::./purchase.adoc[]
+include::./what-next.adoc[]
+include::./resources.adoc[]
+include::./acknowledgements.adoc[]
+include::./copyright.adoc[]
