@@ -27,12 +27,10 @@ class Worker(QRunnable):
         Initialise the runner function with passed args, kwargs.
         '''
 
-        # Retrieve args/kwargs here; and fire processing using them
+        # Retrieve args/kwargs here; and start processing using them
         try:
             result = self.fn(
                 *self.args, **self.kwargs,
-                status=self.signals.status,
-                progress=self.signals.progress,
             )
         except:
             traceback.print_exc()
